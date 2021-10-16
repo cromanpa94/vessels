@@ -3,7 +3,7 @@
 <!-- badges: end -->
 
 
-# `vessels`
+# `The vessels app`
 
 `vessels` is an interactive map built on shiny that allows you to examine basic patterns of vessel movements in a data set. To use the app, please select a vessel type from the first dropdown menu. Next, choose one of the vessels. For a given vessel, the app will display the origin and ending points of the longest trip.
 

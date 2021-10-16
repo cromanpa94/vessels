@@ -3,11 +3,16 @@ library(shiny)
 library(shinydashboard)
 library(dygraphs)
 library(dashboardthemes)
+library(shinybusy)
 
 header <- dashboardHeader(title = "Vessel movements",
                           titleWidth = 200)
 
 body <- dashboardBody(
+  add_busy_spinner(spin = "dots",
+                   timeout = 10,
+                   height = "25px",
+                   width = "25px"),
   shinyDashboardThemes(
     theme = "grey_light"
   ),
@@ -21,19 +26,17 @@ body <- dashboardBody(
            box(width = NULL, title = tagList(shiny::icon("filter",class = 'fa-lg'), "Filter Data") ,
                solidHeader = T, collapsible = T, status = 'primary',
                uiOutput("vt_selected"),
-               uiOutput("vessels_selected"),
+               uiOutput("vessels_selected")
            ),
            box(width = NULL, title = tagList(shiny::icon("gear",class = 'fa-lg'), "Configure") ,
                solidHeader = T, collapsible = T, status = 'primary',
-               "Note that proximity to coast (and resolution) 
+               "Note that proximity to coast (and resolution, default is 0.001 degrees) 
                 could compromise the performance of non-linear distance estimates",
-               selectInput("method", "Lineal distance?", choices = c("Yes", "No")),
-               uiOutput("resolution")
+               selectInput("method", "Linear distance?", choices = c("Yes", "No"))
            ),
            box(width = NULL, title = tagList(shiny::icon("ruler",class = 'fa-lg'), "Information") ,
                solidHeader = T, collapsible = F, status = 'primary',
-               textOutput("distance"),
-               DT::dataTableOutput("table")
+               textOutput("distance")
            ),
            box(width = NULL, title = tagList(shiny::icon("laptop-code",class = 'fa-lg'), "Code") ,
                solidHeader = T, collapsible = T, status = 'primary',
