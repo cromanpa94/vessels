@@ -3,6 +3,12 @@ library(data.table)
 library(feather)
 library(geosphere)
 library(leaflet)
+library(DT)
+library(rgeos)
+library(sf)
+library(fasterize)
+library(raster)
+library(spData)
 source(here::here('functions.R'))
 
 test_that("CSV to feather works", {
