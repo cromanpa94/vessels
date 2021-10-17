@@ -24,15 +24,13 @@ server <- function(input, output, server) {
     summarizeDistance(data = data, 
                       ShipType = input$vt_selected, 
                       VesselName = input$vessels_selected,
-                      linear = input$method)
+                      method = input$method)
   })
   
   
   output$Map <- renderLeaflet({
     leaflet() %>% addTiles()%>%
-      addProviderTiles(providers$CartoDB.Positron) %>%
-      addProviderTiles('Esri.WorldStreetMap', group = 'Esri') %>%
-      addProviderTiles('CartoDB.Positron', group = 'CartoDB')
+      addProviderTiles(providers$Esri.WorldPhysical)
   })
   
   shiny::observeEvent(req(input$vessels_selected != '' ), {
@@ -44,13 +42,11 @@ server <- function(input, output, server) {
       paste0(
         '<b>', 'Maximum distance','</b><br>',
         'Vessel: ', 
-        tpoints[2, "SHIPNAME"],
-        ' (',
-        tpoints[2, "SHIPTYPE"],
-        ')',
-        '<br>', 'Max Dist.: ',
-        round(tpoints[2, "DISTANCE"],2),
-        ' meters'
+        tpoints[i, "SHIPNAME"][[1]],'</b><br>',
+        'Type: ',
+        tpoints[i, "ship_type"][[1]],
+        '<br>', 'Date: ',
+        tpoints[i, "DATETIME"][[1]]
       )
     })
     
@@ -108,7 +104,7 @@ server <- function(input, output, server) {
     })
   })
   
-  observeEvent(req(input$method != 'Yes'), {
+  observeEvent(req(input$method == 'Raster'), {
   world <- st_read(system.file("shapes/world.gpkg", package="spData"))
   })
   

@@ -6,7 +6,7 @@ DatasetToFeather <- function(fileName = 'ships'){
 summarizeDistance <- function(data, 
                               ShipType = input$vt_selected, 
                               VesselName=input$vessels_selected,
-                              linear = input$method){
+                              method = input$method){
   target_obs <- data %>%
     dplyr::filter(ship_type == ShipType & SHIPNAME == VesselName ) %>%
     dplyr::arrange(DATETIME) %>% 
@@ -14,7 +14,7 @@ summarizeDistance <- function(data,
   
   target_obs <- getDistance(data = target_obs, 
                             targetcolumns = c("LON", "LAT"), 
-                            linear = linear)
+                            method = method)
   
   mostRecent <- target_obs %>%
     dplyr::slice(which.max(DISTANCE))  %>%
@@ -27,11 +27,20 @@ summarizeDistance <- function(data,
 
 
 getDistance <- function(data, targetcolumns = c("LON", "LAT"), 
-                        linear = "Yes"){
-  if( linear == 'Yes' ){
+                        method = "Euclidean"){
+  
+  if( method == 'Euclidean' ){
     data$DISTANCE <- sapply(seq_len(nrow(data)), function(x){ 
       objDist <- distm(data[x,targetcolumns], data[(x + 1),targetcolumns])
-    })}else{
+    })}
+  
+  if( method == 'Haversine' ){
+    data$DISTANCE <- sapply(seq_len(nrow(data)), function(x){ 
+      objDist <- distm(data[x,targetcolumns], data[(x + 1),targetcolumns],
+                       fun=distHaversine)
+    })}
+  
+  if( method == 'Rasters' ){
       pts2<-st_as_sf(data[,c("LON", "LAT")], coords = c("LON", "LAT"),
                      crs = 'WGS84')
       r <- raster(extent(pts2), resolution=0.01)

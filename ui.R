@@ -24,9 +24,10 @@ body <- dashboardBody(
            ),
            box(width = NULL, title = tagList(shiny::icon("gear",class = 'fa-lg'), "Configure") ,
                solidHeader = T, collapsible = T, status = 'primary',
-               "Note that proximity to coast (and resolution, default is 0.001 degrees) 
-                could compromise the performance of non-linear distance estimates",
-               selectInput("method", "Linear distance?", choices = c("Yes", "No"))
+               "Please select one of the three methods below. Euclidean and Haversine indexes 
+               are faster than the one based on Rasters. Resolution (default is 0.001 degrees) 
+                could compromise the performance of the latter method.",
+               selectInput("method", "Method", choices = c("Euclidean", "Haversine", "Rasters"))
            ),
            box(width = NULL, title = tagList(shiny::icon("ruler",class = 'fa-lg'), "Information") ,
                solidHeader = T, collapsible = F, status = 'primary',
