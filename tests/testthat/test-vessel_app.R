@@ -8,6 +8,7 @@ library(sf)
 library(fasterize)
 library(raster)
 library(spData)
+library(ggmap)
 source(here::here('functions.R'))
 
 test_that("CSV to feather works", {

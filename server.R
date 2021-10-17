@@ -1,23 +1,4 @@
-library(dplyr)
-library(feather)
-library(leaflet)
-library(shiny)
-library(shinydashboard)
-library(dygraphs)
-library(xts)
-library(geosphere)
-library(DT)
-library(htmltools)
-library(rgeos)
-library(sf)
-library(fasterize)
-library(raster)
-library(spData)
 
-# read data
-data <- feather::read_feather('ships.feather')
-data <- data %>%dplyr::filter(is_parked == 0 )
-source('functions.R')
 
 server <- function(input, output, server) {
   
@@ -46,24 +27,71 @@ server <- function(input, output, server) {
                       linear = input$method)
   })
   
-  shiny::observeEvent(input$vessels_selected, {
-    output$Map <- renderLeaflet({
-      leaflet(filteredData()) %>%
-        addProviderTiles(providers$CartoDB.Positron) %>%
-        addProviderTiles('Esri.WorldStreetMap', group = 'Esri') %>%
-        addProviderTiles('CartoDB.Positron', group = 'CartoDB') %>% 
-        addMarkers(
-          ~LON, ~LAT, label = ~htmlEscape( paste0('Observation: ',id, '; Time: ',DATETIME) ),
-          labelOptions = labelOptions(noHide = T)
-        ) %>%
+  
+  output$Map <- renderLeaflet({
+    leaflet() %>% addTiles()%>%
+      addProviderTiles(providers$CartoDB.Positron) %>%
+      addProviderTiles('Esri.WorldStreetMap', group = 'Esri') %>%
+      addProviderTiles('CartoDB.Positron', group = 'CartoDB')
+  })
+  
+  shiny::observeEvent(req(input$vessels_selected != '' ), {
+    tpoints <- filteredData()[[1]]
+    allpoints <- filteredData()[[2]]
+    view_box <- make_bbox(tpoints$LON, tpoints$LAT, f = .1)
+    
+    labs <- lapply(seq(nrow(tpoints)), function(i) {
+      paste0(
+        '<b>', 'Maximum distance','</b><br>',
+        'Vessel: ', 
+        tpoints[2, "SHIPNAME"],
+        ' (',
+        tpoints[2, "SHIPTYPE"],
+        ')',
+        '<br>', 'Max Dist.: ',
+        round(tpoints[2, "DISTANCE"],2),
+        ' meters'
+      )
+    })
+    
+    leafletProxy("Map", data = allpoints)%>%
+      clearMarkers() %>%
+      clearShapes() %>%
+      addAwesomeMarkers(data = tpoints,
+                   lng = ~ LON, lat = ~ LAT,
+                   icon = makeAwesomeIcon(
+                     icon = "ship",
+                     markerColor = "darkblue",
+                     library = "fa",
+                     iconColor = "#FFFFFF"
+                   )) %>%
+         addPolylines(data = allpoints,
+                      lng= ~ LON,
+                      lat= ~ LAT,
+                      color= ~ 'blue')%>%
+         addPolylines(data = tpoints,
+                      lng= ~ LON,
+                      lat= ~ LAT,
+                      color= ~ 'red') %>% 
         addLayersControl(
           baseGroups = c('OSM', 'Esri', 'CartoDB'),
           options = layersControlOptions(collapsed = TRUE)
         ) %>%
         addMiniMap(toggleDisplay = TRUE,
-                   position = "bottomleft")
+                   position = "bottomleft") %>%
+    flyToBounds(~min(LON), ~min(LAT), ~max(LON), ~max(LAT))%>%
+      addMarkers(data = tpoints,
+        lng = ~LON,
+        lat = ~LAT,
+        label = lapply(labs, htmltools::HTML),
+        labelOptions = labelOptions(
+          direction = 'auto',
+          noHide = T
+        )
+      )
+    
     })
-  })
+
   
 
   observeEvent(req(input$vessels_selected != ''), {
@@ -73,10 +101,10 @@ server <- function(input, output, server) {
       paste("In our data set, the ",input$vessels_selected,
             " (a",input$vt_selected ," vessel) ", 
             "traveled for a maximum of ", 
-            round(filteredData()$DISTANCE[1],2), 
+            round(filteredData()[[1]]$DISTANCE[1],2), 
             "m. This trip happened between",
-            filteredData()$DATETIME[1], " and ",
-            filteredData()$DATETIME[1], ".")
+            filteredData()[[1]]$DATETIME[1], " and ",
+            filteredData()[[1]]$DATETIME[1], ".")
     })
   })
   

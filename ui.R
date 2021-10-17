@@ -1,9 +1,3 @@
-library(leaflet)
-library(shiny)
-library(shinydashboard)
-library(dygraphs)
-library(dashboardthemes)
-library(shinybusy)
 
 header <- dashboardHeader(title = "Vessel movements",
                           titleWidth = 200)

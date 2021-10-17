@@ -21,7 +21,8 @@ summarizeDistance <- function(data,
     dplyr::filter(row_number() == n()) 
   
   mostRecent <- rbind(mostRecent, target_obs[target_obs$id ==  (mostRecent$id + 1),])
-  return(mostRecent)
+  obs <- list(mostRecent=mostRecent, target_obs= target_obs)
+  return(obs)
 }
 
 
