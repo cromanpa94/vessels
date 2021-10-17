@@ -36,21 +36,21 @@ test_that("Is distance numeric?", {
 
 test_that("Assess whether only two columns are being generated", {
   distTest <- summarizeDistance(data, ShipType = "Cargo", VesselName="KAROLI", linear = 'Yes')
-  expect_equal( nrow(distTest), 2  )
+  expect_equal( nrow(distTest[[1]]), 2  )
 })
 
 test_that("Check if the distance column is created, summarizeDistance", {
   distTest <- summarizeDistance(data, ShipType = "Cargo", VesselName="KAROLI", linear = 'Yes')
-  expect_true( "DISTANCE" %in% colnames(distTest) )
+  expect_true( "DISTANCE" %in% colnames(distTest[[1]]) )
 })
 
 
 test_that("Assess whether only two columns are being generated, non-linear", {
   distTest <- summarizeDistance(data, ShipType = "Cargo", VesselName="KAROLI", linear = 'No')
-  expect_equal( nrow(distTest), 2  )
+  expect_equal( nrow(distTest[[1]]), 2  )
 })
 
 test_that("Check if the distance column is created, summarizeDistance, non-linear", {
   distTest <- summarizeDistance(data, ShipType = "Cargo", VesselName="KAROLI", linear = 'No')
-  expect_true( "DISTANCE" %in% colnames(distTest) )
+  expect_true( "DISTANCE" %in% colnames(distTest[[1]]) )
 })
