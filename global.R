@@ -19,5 +19,5 @@ library(shinybusy)
 
 # read data
 data <- feather::read_feather('ships.feather')
-data <- data %>%dplyr::filter(is_parked == 0 )
+#data <- data %>%dplyr::filter(is_parked == 0 )
 source('functions.R')

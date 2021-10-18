@@ -36,11 +36,10 @@ server <- function(input, output, server) {
   shiny::observeEvent(req(input$vessels_selected != '' ), {
     tpoints <- filteredData()[[1]]
     allpoints <- filteredData()[[2]]
-    view_box <- make_bbox(tpoints$LON, tpoints$LAT, f = .1)
-    
-    labs <- lapply(seq(nrow(tpoints)), function(i) {
+
+    labels_ag <- lapply(seq(nrow(tpoints)), function(i) {
       paste0(
-        '<b>', 'Maximum distance','</b><br>',
+        '<b>', 'Basic information','</b><br>',
         'Vessel: ', 
         tpoints[i, "SHIPNAME"][[1]],'</b><br>',
         'Type: ',
@@ -55,37 +54,24 @@ server <- function(input, output, server) {
       clearShapes() %>%
       addAwesomeMarkers(data = tpoints,
                    lng = ~ LON, lat = ~ LAT,
+                   label = lapply(labels_ag, htmltools::HTML),
                    icon = makeAwesomeIcon(
                      icon = "ship",
                      markerColor = "darkblue",
                      library = "fa",
                      iconColor = "#FFFFFF"
                    )) %>%
-         addPolylines(data = allpoints,
-                      lng= ~ LON,
-                      lat= ~ LAT,
-                      color= ~ 'blue')%>%
-         addPolylines(data = tpoints,
-                      lng= ~ LON,
-                      lat= ~ LAT,
-                      color= ~ 'red') %>% 
-        addLayersControl(
-          baseGroups = c('OSM', 'Esri', 'CartoDB'),
-          options = layersControlOptions(collapsed = TRUE)
-        ) %>%
         addMiniMap(toggleDisplay = TRUE,
-                   position = "bottomleft") %>%
-    flyToBounds(~min(LON), ~min(LAT), ~max(LON), ~max(LAT))%>%
-      addMarkers(data = tpoints,
-        lng = ~LON,
-        lat = ~LAT,
-        label = lapply(labs, htmltools::HTML),
-        labelOptions = labelOptions(
-          direction = 'auto',
-          noHide = T
-        )
-      )
-    
+                   position = "bottomleft") %>% 
+    flyToBounds(~min(LON), ~min(LAT), ~max(LON), ~max(LAT))%>% 
+      addPolylines(data = tpoints,
+                   lng= ~ LON,
+                   lat= ~ LAT,
+                   color= 'red') %>% 
+      addPolylines(data = allpoints,
+                   lng= ~ LON,
+                   lat= ~ LAT,
+                   color= 'blue') 
     })
 
   
