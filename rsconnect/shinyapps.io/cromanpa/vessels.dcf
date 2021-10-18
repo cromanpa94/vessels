@@ -5,9 +5,10 @@ account: cromanpa
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 4885903
-bundleId: 5147510
+bundleId: 5148142
 url: https://cromanpa.shinyapps.io/vessels/
-when: 1634490318.91932
-lastSyncTime: 1634490318.91933
+when: 1634513969.35098
+lastSyncTime: 1634513969.351
 asMultiple: FALSE
 asStatic: FALSE
+ignoredFiles: ships.csv
